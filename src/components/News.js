@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import NewsItem from './NewsItem';
 import Spinner from './Spinner';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
+import InfiniteScroll from "react-infinite-scroll-component";
 
 
 
@@ -18,106 +19,112 @@ export class News extends Component {
     pageSize: PropTypes.number,
     category: PropTypes.string
   }
+  capitlizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     // console.log("this is a constructor from News Component");
     this.state = {
       articles: this.articles,
-      loading: false,
+      loading: true,
       page: 1,
+      totalResults: 0
     }
+    document.title = `NewsMonkey - ${this.capitlizeFirstLetter(this.props.category)}`
   }
 
   async updateNews() { // making next click 1 digit back
     console.log('updateNews'); // lifecycle method
     let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=1387f1eff2414e709feacba16df5304e&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    // this.setState({ loading: true });
     let data = await fetch(url);
     let parsedData = await data.json();
+    this.setState({
+      articles: parsedData.articles,
+      totalResults: parsedData.totalResults,
+      loading: false,
+    });
+
+    // window.scrollTo(0, 0);
     console.log(url);
     console.log(data);
     console.log(parsedData);
-    this.setState({ articles: parsedData.articles, totalResults: parsedData.totalResults });
-    window.scrollTo(0, 0);
   }
   async componentDidMount() { // lifecycle method
     // console.log('componentDidMount'); 
-    // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=1387f1eff2414e709feacba16df5304e&page=1&pageSize=${this.props.pageSize}`;
-    // let data = await fetch(url);
-    // let parsedData = await data.json();
-    // console.log(url);
-    // console.log(data);
-    // console.log(parsedData);
-    // this.setState({ articles: parsedData.articles, totalResults: parsedData.totalResults });
-
     this.updateNews();
   }
 
-  handlePrevoiusClick = async () => {
-    console.log("previous");
-    // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=1387f1eff2414e709feacba16df5304e&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
-    // this.setState({ loading: true });
-    // let data = await fetch(url);
-    // let parsedData = await data.json();
-    // console.log(url);
-    // console.log(data);
-    // console.log(parsedData);
-    // this.setState({
-    //   page: this.state.page - 1,
-    //   articles: parsedData.articles,
-    //   loading: false
-    // })
-    await this.setState({ page: this.state.page - 1 }); // added await in ordr to make next previos work fine
-    this.updateNews();
-  }
+  // handlePrevoiusClick = async () => {
+  //   console.log("previous");
+  //   await this.setState({ page: this.state.page - 1 }); // added await in ordr to make next previos work fine
+  //   this.updateNews();
+  // }
+
+  // handleNextClick = async () => {
+  //   console.log("Next");
+  //   await this.setState({ page: this.state.page + 1 }); // adding await made it work else next button making &page=1 on next click 
+  //   this.updateNews();
+  // }
+
+  fetchMoreData = async () => {
+
+    this.setState({ page: this.state.page + 1 });
+
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=1387f1eff2414e709feacba16df5304e&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    let data = await fetch(url);
+    let parsedData = await data.json();
+
+    this.setState({
+      articles: this.state.articles.concat(parsedData.articles),
+      // articles: parsedData.articles,
+      totalResults: parsedData.totalResults,
+    });
 
 
-  handleNextClick = async () => {
-    console.log("Next");
-    // let abc = this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize);
-    // console.log(this.state.page + 1 + " " + "this.state.page + 1 ");
-    // console.log(Math.ceil(this.state.totalResults / this.props.pageSize));
-    // console.log(abc);
-    // console.log(this.props.pageSize);
+    console.log(url);
+    console.log(data);
+    console.log(parsedData);
 
-    // if (!(this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize))) {
-    //   let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=1387f1eff2414e709feacba16df5304e&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
-    //   this.setState({ loading: true });
-    //   let data = await fetch(url);
-    //   let parsedData = await data.json();
-    //   console.log(data);
-    //   console.log(url);
-    //   console.log(parsedData);
-    //   this.setState({
-    //     page: this.state.page + 1,
-    //     articles: parsedData.articles,
-    //     loading: false
-    //   })
-    // }
 
-    await this.setState({ page: this.state.page + 1 }); // adding await made it work else next button making &page=1 on next click 
-    this.updateNews();
-  }
+  };
+
+
   render() {
     return (
       <div>
         <div className="container my-3">
-          <h1 className='mb-4 text-center' >NewsMonkey - Top HeadLines</h1>
+          <h1 className='my-4 mb-4 text-center' >NewsMonkey - Top {this.capitlizeFirstLetter(this.props.category)} Headlines</h1>
 
-          {this.state.loading && <Spinner />}
+          {/* {this.state.loading && <Spinner />} */}
 
-          <div className="row">
-            {!this.state.loading && this.state.articles.map((element) => { // not setting state will make run default local json or no json
-              return <div className="col-md-4 mb-4" key={element.url}>
-                <NewsItem title={element.title ? element.title : ""} description={element.description ? element.description : ""} imgUrl={element.urlToImage ? element.urlToImage : "https://www.hindustantimes.com/ht-img/img/2023/11/25/1600x900/steven-ungermann-xsWOJGv_2eI-unsplash_1700899737647_1700899755233.jpg"} newsUrl={element.url} author={element.author} date={element.publishedAt} source={element.source.name} />
+          <InfiniteScroll
+            dataLength={this.state.articles.length}
+            next={this.fetchMoreData}
+            // hasMore={this.state.articles.length !== this.state.totalResults}
+            hasMore={this.state.articles.length <= this.state.totalResults}
+            loader={<Spinner />}
+          >
+            <div className="container">
+              <div className="row">
+                {this.state.articles.map((element,index) => { // not setting state will make run default local json or no json
+                  return <div className="col-md-4 mb-4" key={index}>
+                    <NewsItem title={element.title ? element.title : ""} description={element.description ? element.description : ""} imgUrl={element.urlToImage ? element.urlToImage : "https://www.hindustantimes.com/ht-img/img/2023/11/25/1600x900/steven-ungermann-xsWOJGv_2eI-unsplash_1700899737647_1700899755233.jpg"} newsUrl={element.url} author={element.author} date={element.publishedAt} source={element.source.name} />
+                  </div>
+                })}
               </div>
-            })}
-          </div>
+            </div>
 
-          <div className="container d-flex justify-content-between mb-4">
+
+          </InfiniteScroll>
+
+
+          {/* <div className="container d-flex justify-content-between mb-4">
             <button type="button" className="btn btn-dark" onClick={this.handlePrevoiusClick} disabled={this.state.page <= 1}> &larr; Prevoius</button>
             <button type="button" className="btn btn-dark" onClick={this.handleNextClick} disabled={this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize)}>Next &rarr;	</button>
-          </div>
+          </div> */}
         </div>
       </div>
     )
