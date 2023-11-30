@@ -8,13 +8,15 @@ export class News extends Component {
   static defaultProps = {
     country: 'in',
     pageSize: 5,
-    category: 'general'
+    category: 'general',
+    // apiKey: '1387f1eff2414e709feacba16df5304e'
   }
 
   static propTypes = {
     country: PropTypes.string,
     pageSize: PropTypes.number,
-    category: PropTypes.string
+    category: PropTypes.string,
+    // apiKey:PropTypes.string
   }
   capitlizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -35,9 +37,12 @@ export class News extends Component {
   async updateNews() { // making next click 1 digit back
     console.log('updateNews'); // lifecycle method
     this.props.setProgress(10);
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=1387f1eff2414e709feacba16df5304e&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=1387f1eff2414e709feacba16df5304e&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+
     // this.setState({ loading: true });
-    
+
     let data = await fetch(url);
     this.props.setProgress(30);
 
@@ -78,7 +83,7 @@ export class News extends Component {
 
     this.setState({ page: this.state.page + 1 });
 
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=1387f1eff2414e709feacba16df5304e&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
     let data = await fetch(url);
     let parsedData = await data.json();
 
