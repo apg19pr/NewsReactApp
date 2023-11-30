@@ -3,9 +3,6 @@ import NewsItem from './NewsItem';
 import Spinner from './Spinner';
 import PropTypes from 'prop-types';
 import InfiniteScroll from "react-infinite-scroll-component";
-
-
-
 export class News extends Component {
   articles = [];
   static defaultProps = {
@@ -37,15 +34,23 @@ export class News extends Component {
 
   async updateNews() { // making next click 1 digit back
     console.log('updateNews'); // lifecycle method
+    this.props.setProgress(10);
     let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=1387f1eff2414e709feacba16df5304e&page=${this.state.page}&pageSize=${this.props.pageSize}`;
     // this.setState({ loading: true });
+    
     let data = await fetch(url);
+    this.props.setProgress(30);
+
     let parsedData = await data.json();
+    this.props.setProgress(50);
+
     this.setState({
       articles: parsedData.articles,
       totalResults: parsedData.totalResults,
       loading: false,
     });
+    this.props.setProgress(100);
+
 
     // window.scrollTo(0, 0);
     console.log(url);
@@ -109,9 +114,17 @@ export class News extends Component {
           >
             <div className="container">
               <div className="row">
-                {this.state.articles.map((element,index) => { // not setting state will make run default local json or no json
+                {this.state.articles.map((element, index) => { // not setting state will make run default local json or no json
                   return <div className="col-md-4 mb-4" key={index}>
-                    <NewsItem title={element.title ? element.title : ""} description={element.description ? element.description : ""} imgUrl={element.urlToImage ? element.urlToImage : "https://www.hindustantimes.com/ht-img/img/2023/11/25/1600x900/steven-ungermann-xsWOJGv_2eI-unsplash_1700899737647_1700899755233.jpg"} newsUrl={element.url} author={element.author} date={element.publishedAt} source={element.source.name} />
+                    <NewsItem 
+                    
+                      title={element.title ? element.title : ""}
+                      description={element.description ? element.description : ""}
+                      imgUrl={element.urlToImage ? element.urlToImage : "https://www.hindustantimes.com/ht-img/img/2023/11/25/1600x900/steven-ungermann-xsWOJGv_2eI-unsplash_1700899737647_1700899755233.jpg"}
+                      newsUrl={element.url}
+                      author={element.author}
+                      date={element.publishedAt}
+                      source={element.source.name} />
                   </div>
                 })}
               </div>
