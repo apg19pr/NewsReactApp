@@ -16,7 +16,7 @@ const News = (props) => {
   document.title = `NewsMonkey - ${capitlizeFirstLetter(props.category)}`;
 
   const updateNews = async () => { // making next click 1 digit back
-    console.log('updateNews');
+    // console.log('updateNews');
     props.setProgress(10); // loading bar
     let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pageSize=${props.pageSize}`;
     setLoading(true);
@@ -48,8 +48,7 @@ const News = (props) => {
   }
   const handleNextClick = async () => {
     console.log("Next");
-    await setPage(page + 1) // added await in ordr to make next previos work fine
-
+    // await setPage(page + 1) // added await in ordr to make next previos work fine
     await setPage((prevPage) => prevPage + 1)
     const updatePage = page + 1;
 
@@ -58,8 +57,6 @@ const News = (props) => {
   }
   const fetchMoreData = async () => {
     // await setPage(page + 1);
-
-
     await setPage((prevPage) => prevPage + 1)
     const updatePage = page + 1;
 
