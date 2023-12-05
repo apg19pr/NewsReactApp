@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"; // syntax chang
 import LoadingBar from 'react-top-loading-bar';
 
 export default class App extends Component {
-  pageSize = 10;
+  pageSize = 5;
   apiKey = process.env.REACT_APP_NEWS_API; // env variaales > added in git ignore 
   // apiKey = "1387f1eff2414e709feacba16df5304e";
   state = {
@@ -26,7 +26,6 @@ export default class App extends Component {
             loaderSpeed={500}
             color='#f11946'
             progress={this.state.progress}
-          // onLoaderFinished={() => setProgress(0)}
           />
           <Routes>
             <Route exact path="/" element={<News setProgress={this.setProgress} apiKey={this.apiKey} pageSize={this.pageSize} country="in" category='general' />} />

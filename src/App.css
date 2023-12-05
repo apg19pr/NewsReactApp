@@ -44,3 +44,21 @@
     height: 100%;
   }
 }
+
+.lp__full_row_wrapper{
+  display: block;
+}
+.lp__full_row_wrapper::after,
+.lp__full_row_wrapper::before{
+  clear:both;
+  display: table;
+  content: "";
+}
+
+
+.responsivegrid::before,
+  .responsivegrid::after{
+  clear:both;
+  display: table;
+  content: "";
+}
