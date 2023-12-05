@@ -14,6 +14,7 @@ const News = (props) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
   document.title = `NewsMonkey - ${capitlizeFirstLetter(props.category)}`;
+
   const updateNews = async () => { // making next click 1 digit back
     console.log('updateNews');
     props.setProgress(10); // loading bar
@@ -30,10 +31,15 @@ const News = (props) => {
     console.log(url);
     console.log(data);
     console.log(parsedData);
+
+    console.log("page: " + page, " page + 1 " + page + 1)
+
   }
+
   useEffect(() => {
     updateNews();
   }, [])
+
   const handlePrevoiusClick = async () => {
     console.log("previous");
     await setPage(page - 1) // added await in ordr to make next previos work fine
@@ -43,12 +49,21 @@ const News = (props) => {
   const handleNextClick = async () => {
     console.log("Next");
     await setPage(page + 1) // added await in ordr to make next previos work fine
+
+    await setPage((prevPage) => prevPage + 1)
+    const updatePage = page + 1;
+
     console.log(page, page + 1)
     updateNews();
   }
   const fetchMoreData = async () => {
-    await setPage(page + 1)
-    let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pageSize=${props.pageSize}`;
+    // await setPage(page + 1);
+
+
+    await setPage((prevPage) => prevPage + 1)
+    const updatePage = page + 1;
+
+    let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${updatePage}&pageSize=${props.pageSize}`;
     let data = await fetch(url);
     let parsedData = await data.json();
     setarticles(articles.concat(parsedData.articles))
@@ -56,11 +71,11 @@ const News = (props) => {
     console.log(url);
     console.log(data);
     console.log(parsedData);
-    console.log(page, page + 1)
+    console.log("page: " + page, " page + 1 " + page + 1)
   };
   return (
     <div>
-      <div className="container bg-dark text-light my-3">
+      <div className="container my-3">
         <h1 className='my-4 mb-4 text-center' >NewsMonkey - Top {capitlizeFirstLetter(props.category)} Headlines</h1>
         <div className="container d-flex justify-content-between mb-4">
           <button type="button" className="btn btn-dark" onClick={handlePrevoiusClick} disabled={page <= 1}> &larr; Prevoius</button>
